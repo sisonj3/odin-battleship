@@ -43,6 +43,38 @@ describe('Placing Carrier', () => {
 
 });
 
+describe('Test recieving attacks', () => {
+    let board;
+
+    beforeEach(() => {
+        board = gameboard();
+        board.placeShip(ship(5), 0, 0, true);
+    });
+
+    test('Out of bound coordinates', () => {
+        expect(board.receiveAttack(-1, -1)).toBe(false);
+
+        expect(board.receiveAttack(10, 10)).toBe(false);
+    });
+
+    test('Missed attack', () => {
+        expect(board.receiveAttack(1, 1)).toBe(true);
+
+        expect(board.getAtIndex(1, 1)).toBe('O');
+    });
+
+    test('Hit attack', () => {
+        expect(board.receiveAttack(0, 0)).toBe(true);
+
+        expect(board.getAtIndex(0, 0)).toBe('X');
+    });
+
+    test('Repeated coordinate', () => {
+        expect(board.receiveAttack(0, 0)).toBe(true);
+        expect(board.receiveAttack(0, 0)).toBe(false);
+    });
+});
+
 describe('Test loss', () => {
     let board;
     
