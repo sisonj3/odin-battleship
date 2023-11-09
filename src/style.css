@@ -1,0 +1,8 @@
+.title {
+    text-align: center;
+}
+
+.new-game {
+    display: flex;
+    justify-content: center;
+}
