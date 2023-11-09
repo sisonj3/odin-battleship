@@ -36,7 +36,7 @@ function gameboard() {
             ships.push(ship);
 
             for (let i = 0; i < ship.length; i++){
-                gameboard[x + i][y] = ships.indexOf(ship) + 1;
+                gameboard[x + i][y] = ships.indexOf(ship);
             }
 
         } else {
@@ -54,11 +54,32 @@ function gameboard() {
             ships.push(ship);
 
             for (let i = 0; i < ship.length; i++){
-                gameboard[x][y + i] = ships.indexOf(ship) + 1;
+                gameboard[x][y + i] = ships.indexOf(ship);
             }
         }
 
         return true;
+    }
+
+    // Returns true if attack is valid, false if invalid
+    function receiveAttack(x, y) {
+
+        if (x < 0 || y < 0 || x >= gameboard.length || y >= gameboard.length) {
+            return false;
+        }
+
+        if (gameboard[x][y] != -1 && typeof gameboard[x][y] == 'number') {
+            // Ship is hit
+            ships[gameboard[x][y]].hit();
+            gameboard[x][y] = 'X';
+            return true;
+        } else if (gameboard[x][y] == -1) {
+            // Miss
+            gameboard[x][y] = 'O';
+            return true;
+        } else {
+            return false;
+        }
     }
 
     function checkLoss() {
@@ -69,6 +90,15 @@ function gameboard() {
         }
 
         return true;
+    }
+
+    function getAtIndex(x, y) {
+
+        if (x < 0 || y < 0 || x >= gameboard.length || y >= gameboard.length) {
+            return null;
+        }
+
+        return gameboard[x][y];
     }
 
     function printBoard() {
@@ -90,7 +120,7 @@ function gameboard() {
     }
 
     return {
-        get gameboard() { return gameboard; }, placeShip, checkLoss, printBoard };
+        get length() { return gameboard.length; }, placeShip, receiveAttack, checkLoss, getAtIndex, printBoard };
 }
 
 module.exports = gameboard;
