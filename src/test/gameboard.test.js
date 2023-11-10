@@ -8,11 +8,11 @@ describe('Placing Carrier', () => {
         let piece = ship(5);
 
         test('X Axis', () => {
-            expect(board.placeShip(piece, 6, 0, true)).toBe(false);
+            expect(board.placeShip(piece, 0, 6, true)).toBe(false);
         });
 
         test('Y Axis', () => {
-            expect(board.placeShip(piece, 0, 6, false)).toBe(false);
+            expect(board.placeShip(piece, 6, 0, false)).toBe(false);
         });
     });
     
@@ -22,12 +22,12 @@ describe('Placing Carrier', () => {
 
         beforeEach(() => { board = gameboard(); piece = ship(5)});
 
-        test('Place from (0,0) to (4,0)', () => {
-            expect(board.placeShip(piece, 0, 0, true)).toBe(true);
+        test('Place from (0,5) to (0,9)', () => {
+            expect(board.placeShip(piece, 0, 5, true)).toBe(true);
         });
 
-        test('Place from (9, 5) to (9, 9)', () => {
-            expect(board.placeShip(piece, 9, 5, false)).toBe(true);
+        test('Place from (5, 9) to (9, 9)', () => {
+            expect(board.placeShip(piece, 5, 9, false)).toBe(true);
         });
     });
     
@@ -38,7 +38,7 @@ describe('Placing Carrier', () => {
 
         expect(board.placeShip(piece1, 0, 0, true)).toBe(true);
 
-        expect(board.placeShip(piece2, 2, 0, false)).toBe(false);
+        expect(board.placeShip(piece2, 0, 2, false)).toBe(false);
     });
 
 });

@@ -22,24 +22,6 @@ function gameboard() {
 
     function placeShip(ship, x, y, isXAxis) {
         if (isXAxis) {
-            if ((ship.length + x - 1) >= gameboard.length) {
-                return false;
-            }
-
-            // Check if space is already occupied
-            for (let i = 0; i < ship.length; i++){
-                if (gameboard[x + i][y] != -1) {
-                    return false;
-                }
-            }
-
-            ships.push(ship);
-
-            for (let i = 0; i < ship.length; i++){
-                gameboard[x + i][y] = ships.indexOf(ship);
-            }
-
-        } else {
             if ((ship.length + y - 1) >= gameboard.length) {
                 return false;
             }
@@ -55,6 +37,24 @@ function gameboard() {
 
             for (let i = 0; i < ship.length; i++){
                 gameboard[x][y + i] = ships.indexOf(ship);
+            }
+
+        } else {
+            if ((ship.length + x - 1) >= gameboard.length) {
+                return false;
+            }
+
+            // Check if space is already occupied
+            for (let i = 0; i < ship.length; i++){
+                if (gameboard[x + i][y] != -1) {
+                    return false;
+                }
+            }
+
+            ships.push(ship);
+
+            for (let i = 0; i < ship.length; i++){
+                gameboard[x + i][y] = ships.indexOf(ship);
             }
         }
 
