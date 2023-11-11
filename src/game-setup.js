@@ -4,37 +4,44 @@ import ship from './ship';
 // Dom elements
 const overlay = document.querySelector('.overlay');
 const setupDiv = document.querySelector('.ship-setup');
-const axisDiv = document.querySelector('.axis-chooser');
 const setupBoardDiv = document.querySelector('.setup');
-const axisBtn = document.createElement('button');
+const axisBtn = document.querySelector('.axis-btn');
+const startBtn = document.querySelector('.start-btn');
+
+// Axis btn event listener
+axisBtn.addEventListener('click', setAxisText);
+
+// Start btn event listener
+startBtn.addEventListener('click', startGame);
+
+// Ships to be placed
+let ships;
+// Cells that fill the board
+let cells;
+// Player
+let realPlayer;
+// Boolean to check if setup is complete
+let setupDone;
 
 // Function is called when New Game button is pressed
 function setupGame() {
     // Create player
-    const realPlayer = player(true);
+    realPlayer = player(true);
 
     // Boolean to check if setup is complete
-    let setupDone = false;
+    setupDone = false;
 
+    // Reset setup index
     setupBoardDiv.dataset.n = 0;
-
-    // Clear axisDiv
-    while (axisDiv.firstChild) {
-        axisDiv.removeChild(axisDiv.lastChild);
-    }
-
-    // Set up axisBtn and add to axisDiv
-    axisBtn.innerText = 'Axis: X';
-    axisDiv.appendChild(axisBtn);
 
     // Clear setupBoardDiv
     while (setupBoardDiv.firstChild) {
         setupBoardDiv.removeChild(setupBoardDiv.lastChild);
     }
 
-    let ships = [ship(5), ship(4), ship(3), ship(3), ship(2)];
+    ships = [ship(5), ship(4), ship(3), ship(3), ship(2)];
 
-    let cells = [];
+    cells = [];
     
     for (let i = 0; i < 10; i++){
         // Add row to cells array
@@ -55,81 +62,11 @@ function setupGame() {
             // Add cell to cell array
             cells[i].push(cell);
 
-            cell.addEventListener('mouseover', () => {
-                let currentShipLength = ships[setupBoardDiv.dataset.n].length;
+            cell.addEventListener('mouseover', () => { displayShip(i, j) });
 
-                // X axis display
-                if (checkAxis()) {
+            cell.addEventListener('mouseout', () => { endDisplay(i, j) });
 
-                    if ((j + currentShipLength) > 10) {
-                        cells[i][j].classList.add('invalid');
-                    } else {
-                        for (let k = 0; k < currentShipLength; k++){
-                            cells[i][j + k].classList.add('ship');
-                        }
-                    }
-                    
-                } else {
-
-                    if ((i + currentShipLength) > 10) {
-                        cells[i][j].classList.add('invalid');
-                    } else {
-                        for (let k = 0; k < currentShipLength; k++){
-                            cells[i + k][j].classList.add('ship');
-                        }
-                    }
-                    
-                }
-            });
-
-            cell.addEventListener('mouseout', () => {
-                let currentShipLength = ships[setupBoardDiv.dataset.n].length;
-
-                if (cells[i][j].classList.contains('invalid')) {
-                    cells[i][j].classList.remove('invalid');
-                } else if (checkAxis()) {
-                    for (let k = 0; k < currentShipLength; k++){
-                        cells[i][j + k].classList.remove('ship');
-                    }
-                } else {
-                    for (let k = 0; k < currentShipLength; k++){
-                        cells[i + k][j].classList.remove('ship');
-                    }
-                }
-            });
-
-            cell.addEventListener('click', (e) => {
-                let currentShip = ships[setupBoardDiv.dataset.n];
-                let alignment = checkAxis();
-
-                // If ship is placed
-                if (realPlayer.playerBoard.placeShip(currentShip, i, j, alignment) && !setupDone) {
-                    console.log(`Adding ships[${setupBoardDiv.dataset.n}] at (${i}, ${j})`);
-
-                    if (alignment) {
-                        for (let k = 0; k < currentShip.length; k++) {
-                            cells[i][j + k].classList.remove('ship');
-                            cells[i][j + k].classList.add('placed');
-                        }
-                    } else {
-                        for (let k = 0; k < currentShip.length; k++) {
-                            cells[i + k][j].classList.remove('ship');
-                            cells[i + k][j].classList.add('placed');
-                        }
-                    }
-
-                    if (setupBoardDiv.dataset.n < ships.length - 1) {
-                        setupBoardDiv.dataset.n++;
-                    } else {
-                        // Start game
-                        console.log('Start game');
-                        console.log(realPlayer.playerBoard.printBoard());
-                        setupDone = true;
-                    }
-                    
-                }
-
-            });
+            cell.addEventListener('click', () => { setShip(i, j) });
         }
     }
 
@@ -137,16 +74,95 @@ function setupGame() {
     overlay.classList.toggle('hidden');
     setupDiv.classList.toggle('hidden');
 
-    // Axis btn event listener
-    axisBtn.addEventListener('click', () => {
-        if (checkAxis()) {
+}
+
+function displayShip(i, j) {
+    let currentShipLength = ships[setupBoardDiv.dataset.n].length;
+
+    // X axis display
+    if (checkAxis()) {
+
+        if ((j + currentShipLength) > 10) {
+            cells[i][j].classList.add('invalid');
+        } else {
+            for (let k = 0; k < currentShipLength; k++){
+                cells[i][j + k].classList.add('ship');
+            }
+        }
+        
+    } else {
+
+        if ((i + currentShipLength) > 10) {
+            cells[i][j].classList.add('invalid');
+        } else {
+            for (let k = 0; k < currentShipLength; k++){
+                cells[i + k][j].classList.add('ship');
+            }
+        }
+        
+    }
+}
+
+function endDisplay(i, j) {
+    let currentShipLength = ships[setupBoardDiv.dataset.n].length;
+
+    if (cells[i][j].classList.contains('invalid')) {
+        cells[i][j].classList.remove('invalid');
+    } else if (checkAxis()) {
+        for (let k = 0; k < currentShipLength; k++){
+            cells[i][j + k].classList.remove('ship');
+        }
+    } else {
+        for (let k = 0; k < currentShipLength; k++){
+            cells[i + k][j].classList.remove('ship');
+        }
+    }
+}
+
+function setShip(i, j) {
+    let ship = ships[setupBoardDiv.dataset.n]
+    let alignment = checkAxis();
+
+    // If ship is placed
+    if (realPlayer.playerBoard.placeShip(ship, i, j, alignment) && !setupDone) {
+        console.log(`Adding ships[${setupBoardDiv.dataset.n}] at (${i}, ${j})`);
+
+        if (alignment) {
+            for (let k = 0; k < ship.length; k++) {
+                cells[i][j + k].classList.remove('ship');
+                cells[i][j + k].classList.add('placed');
+            }
+        } else {
+            for (let k = 0; k < ship.length; k++) {
+                cells[i + k][j].classList.remove('ship');
+                cells[i + k][j].classList.add('placed');
+            }
+        }
+
+        if (setupBoardDiv.dataset.n < ships.length - 1) {
+            setupBoardDiv.dataset.n++;
+        } else {
+            setupDone = true;
+        }
+    }
+}
+
+function setAxisText() {
+    if (checkAxis()) {
             console.log('Change to Y');
             axisBtn.innerText = 'Axis: Y';
         } else {
             console.log('Change to X');
             axisBtn.innerText = 'Axis: X';
         }
-    });
+}
+
+function startGame() {
+    if (setupDone) {
+        // Start game
+        console.log('Start game');
+        console.log(realPlayer.playerBoard.printBoard());
+    }
 }
 
 function checkAxis() {
