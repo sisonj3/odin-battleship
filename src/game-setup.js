@@ -1,3 +1,4 @@
+import playGame from './play-game';
 import player from './player';
 import ship from './ship';
 
@@ -5,6 +6,8 @@ import ship from './ship';
 const overlay = document.querySelector('.overlay');
 const setupDiv = document.querySelector('.ship-setup');
 const setupBoardDiv = document.querySelector('.setup');
+const gameDiv = document.querySelector('.game');
+const resultsH1 = document.querySelector('.results-display');
 const axisBtn = document.querySelector('.axis-btn');
 const startBtn = document.querySelector('.start-btn');
 
@@ -33,6 +36,8 @@ function setupGame() {
 
     // Reset setup index
     setupBoardDiv.dataset.n = 0;
+
+    resultsH1.textContent = '';
 
     // Clear setupBoardDiv
     while (setupBoardDiv.firstChild) {
@@ -73,6 +78,7 @@ function setupGame() {
     // Show overlay and setup form
     overlay.classList.toggle('hidden');
     setupDiv.classList.toggle('hidden');
+    gameDiv.classList.add('hidden');
 
 }
 
@@ -123,28 +129,32 @@ function setShip(i, j) {
     let ship = ships[setupBoardDiv.dataset.n]
     let alignment = checkAxis();
 
-    // If ship is placed
-    if (realPlayer.playerBoard.placeShip(ship, i, j, alignment) && !setupDone) {
-        console.log(`Adding ships[${setupBoardDiv.dataset.n}] at (${i}, ${j})`);
+    // If setup is not done
+    if (!setupDone) {
+        // If ship is placed
+        if (realPlayer.playerBoard.placeShip(ship, i, j, alignment)) {
+            console.log(`Adding ships[${setupBoardDiv.dataset.n}] at (${i}, ${j})`);
 
-        if (alignment) {
-            for (let k = 0; k < ship.length; k++) {
-                cells[i][j + k].classList.remove('ship');
-                cells[i][j + k].classList.add('placed');
+            if (alignment) {
+                for (let k = 0; k < ship.length; k++) {
+                    cells[i][j + k].classList.remove('ship');
+                    cells[i][j + k].classList.add('placed');
+                }
+            } else {
+                for (let k = 0; k < ship.length; k++) {
+                    cells[i + k][j].classList.remove('ship');
+                    cells[i + k][j].classList.add('placed');
+                }
             }
-        } else {
-            for (let k = 0; k < ship.length; k++) {
-                cells[i + k][j].classList.remove('ship');
-                cells[i + k][j].classList.add('placed');
-            }
-        }
 
-        if (setupBoardDiv.dataset.n < ships.length - 1) {
-            setupBoardDiv.dataset.n++;
-        } else {
-            setupDone = true;
+            if (setupBoardDiv.dataset.n < ships.length - 1) {
+                setupBoardDiv.dataset.n++;
+            } else {
+                setupDone = true;
+            }
         }
     }
+    
 }
 
 function setAxisText() {
@@ -159,9 +169,12 @@ function setAxisText() {
 
 function startGame() {
     if (setupDone) {
+        // Hide overlay and setup form
+        overlay.classList.toggle('hidden');
+        setupDiv.classList.toggle('hidden');
+
         // Start game
-        console.log('Start game');
-        console.log(realPlayer.playerBoard.printBoard());
+        playGame(realPlayer);
     }
 }
 
