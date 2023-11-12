@@ -40,38 +40,64 @@
 }
 
 /* Board stylings */
+.game {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    gap: 5rem;
+}
+
+.cpu .cell:hover {
+    opacity: 40%;
+}
+
 .board {
     display: grid;
     grid-template: repeat(10, 2rem) / repeat(10, 2rem);
+    border: 1px solid black;
 }
 
 .cell {
+    background-color: rgba(0, 0, 0, 50%);
     border: 1px solid black;
     height: 2rem;
     width: 2rem;
 }
 
 .placed {
-    background-color: blue;
+    background-color: rgba(0, 0, 255, 50%);
     border: 1px solid black;
-    opacity: 25%;
 }
 
 .ship {
     background-color: black;
     border: 1px solid black;
-    opacity: 25%;
 }
 
 .invalid {
-    background-color: red;
+    background-color: rgba(255, 0, 0, 50%);
     border: 1px solid black;
-    opacity: 25%;
+}
+
+/* Results Stylings */
+.results {
+    text-align: center;
 }
 
 /* Generic Stylings */
 .hidden {
     transform: scale(0);
+}
+
+.hit {
+    filter: invert(17%) sepia(68%) saturate(4499%) hue-rotate(353deg) brightness(98%) contrast(124%);
+    opacity: 100%;
+}
+
+.miss {
+    filter: invert(100%) sepia(60%) saturate(2%) hue-rotate(304deg) brightness(108%) contrast(101%);
+    opacity: 100%;
 }
 
 img {
